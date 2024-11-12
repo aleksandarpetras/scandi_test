@@ -17,58 +17,53 @@ use Magento\InventoryApi\Api\SourceItemsSaveInterface;
 
 class AddSimpleProduct implements DataPatchInterface
 {
-  
     private const SKU = 'product-123';
-
-  
     private const PRODUCT_NAME = 'Product';
-
-  
     private const PRICE = 50.00;
-
-  
     private const CATEGORY_ID = 2;
-
-    
     private const QTY = 20;
-
-  
     private const SOURCE_QTY = 20;
-
-    
     private const ATTRIBUTE_SET_ID = 4;
-    
-   
+
+    /**
+     * @var ProductInterfaceFactory
+     */
     protected ProductInterfaceFactory $productInterfaceFactory;
 
-
+    /**
+     * @var ProductRepositoryInterface
+     */
     protected ProductRepositoryInterface $productRepository;
 
- 
+    /**
+     * @var CategoryFactory
+     */
     protected CategoryFactory $categoryFactory;
 
- 
+    /**
+     * @var State
+     */
     protected State $state;
 
-  
+    /**
+     * @var SourceItemInterfaceFactory
+     */
     protected SourceItemInterfaceFactory $sourceItemFactory;
-    
-  
+
+    /**
+     * @var SourceItemsSaveInterface
+     */
     protected SourceItemsSaveInterface $sourceItemsSaveInterface;
-   
-   
-   
 
     /**
      * Constructor for Product.
-    
      *
-     * @param ProductInterfaceFactory $productInterfaceFactory Factory for creating product instances
-     * @param ProductRepositoryInterface $productRepository Repository for saving and retrieving products
-     * @param CategoryFactory $categoryFactory Factory for creating category instances
-     * @param State $state Application state, used to set the area code
+     * @param ProductInterfaceFactory    $productInterfaceFactory  Factory for creating product instances
+     * @param ProductRepositoryInterface $productRepository        Repository for saving and retrieving products
+     * @param CategoryFactory            $categoryFactory          Factory for creating category instances
+     * @param State                      $state                    Application state, used to set the area code
      * @param SourceItemInterfaceFactory $sourceItemFactory
-     * @param SourceItemsSaveInterface $sourceItemsSaveInterface
+     * @param SourceItemsSaveInterface   $sourceItemsSaveInterface
      */
     public function __construct(
         ProductInterfaceFactory $productInterfaceFactory,
@@ -87,8 +82,6 @@ class AddSimpleProduct implements DataPatchInterface
     }
 
     /**
-    
-     * 
      * @return void
      */
     public function apply(): void
@@ -104,18 +97,12 @@ class AddSimpleProduct implements DataPatchInterface
      */
     public function execute(): void
     {
-        $sku = self::SKU;
-
-        
-        if ($this->productRepository->getIdBySku($sku)) {
-            return; // If product exists, skip creation
-        }
-
         $product = $this->productInterfaceFactory->create();
-        
 
-     
-        
+        if ($this->productRepository->getIdBySku(self::SKU)) {
+            return; // If product exists, skip creation
+        };
+
         $product->setSku(self::SKU);
         $product->setName(self::PRODUCT_NAME);
         $product->setPrice(self::PRICE);
@@ -125,9 +112,8 @@ class AddSimpleProduct implements DataPatchInterface
         $product->setTypeId(Type::TYPE_SIMPLE);
         $product->setStockData(['qty' => self::QTY, 'is_in_stock' => 1]);
 
-
-        // Assign the product to the "Default Category" 
-        $category = $this->categoryFactory->create()->load( self::CATEGORY_ID);
+        // Assign the product to the "Default Category"
+        $category = $this->categoryFactory->create()->load(self::CATEGORY_ID);
         $product->setCategoryIds([$category->getId()]);
 
         // Save the product with the category assignment
@@ -145,9 +131,7 @@ class AddSimpleProduct implements DataPatchInterface
     }
 
     /**
- 
-     *
-     * @return array An empty array if there are no dependencies.
+     * @return array|string[]
      */
     public static function getDependencies(): array
     {
@@ -155,9 +139,7 @@ class AddSimpleProduct implements DataPatchInterface
     }
 
     /**
-  
-     *
-     * @return array An empty array if there are no aliases.
+     * @return array|string[]
      */
     public function getAliases(): array
     {
